@@ -7,9 +7,6 @@ class HallController {
     def sessionFactory
     def springSecurityService
 
-    private final static String BEGIN_SCRIPT_TAG = "<script type='text/javascript'>\n"
-    private final static String END_SCRIPT_TAG = "</script>\n"
-
     def index() {
         redirect(action: 'hall')
     }
@@ -30,6 +27,9 @@ class HallController {
             }
         }
 
-        [loggedInUsers: loggedInUsers, statistics: statistics]
+        // Get all my open games
+        def openGames = com.tictactoe.TicTacToe.findAll("from TicTacToe where (player1 =:currentUser or player2 = :currentUser) and finished = false", [currentUser: currentUser])
+
+        [loggedInUsers: loggedInUsers, statistics: statistics, openGames: openGames, currentUser: currentUser]
     }
 }

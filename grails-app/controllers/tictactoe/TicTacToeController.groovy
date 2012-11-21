@@ -3,8 +3,6 @@ package tictactoe
 import com.tictactoe.TicTacToe
 import com.tictactoe.User
 
-import javax.servlet.http.HttpServletResponse
-
 class TicTacToeController {
     def springSecurityService
     def ticTacToeService
@@ -49,12 +47,9 @@ class TicTacToeController {
     def findOpenGames() {
         User currentUser = springSecurityService.currentUser
 
-        TicTacToe game = TicTacToe.find("from TicTacToe where (player1 = :currentUser or player2 = :currentUser) and finished = false", [currentUser: currentUser])
+        // Get all the open games
+        def openGames = TicTacToe.findAll("from TicTacToe where (player1 = :currentUser or player2 = :currentUser) and finished = false", [currentUser: currentUser])
 
-        if (game) {
-            render(status: HttpServletResponse.SC_OK, text: createLink(controller: 'ticTacToe', action: "playGame", id: game.id))
-        } else {
-            render(status: HttpServletResponse.SC_NOT_FOUND)
-        }
+        render(template: "../hall/openGames", model: [currentUser: currentUser, openGames: openGames])
     }
 }

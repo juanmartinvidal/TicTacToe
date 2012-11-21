@@ -8,14 +8,27 @@
 
     <script type="text/javascript">
         $(function () {
-            var intervalId = setInterval(findOpenGames, 1500);
+            var intervalId = setInterval(findOpenGames, 2000);
         });
 
         function findOpenGames() {
             $.ajax({
                 url:"${g.createLink(controller: 'ticTacToe', action: 'findOpenGames')}",
                 success:function (data) {
-                    window.location = data;
+                    $("#open-games-table-container").html(data);
+
+                    // Create the open games grid.
+                    var grid = Ext.create('Ext.ux.grid.TransformGrid', 'open-games-table', {
+                        renderTo:'open-games-table-container',
+                        sortableColumns:true,
+                        minHeight:100,
+                        overflowX:"hidden",
+                        width:400,
+                        viewConfig:{
+                            stripeRows:true,
+                            enableTextSelection:true
+                        }
+                    });
                 }
             });
         }
@@ -46,7 +59,8 @@
                 }
             });
 
-            var grid = Ext.create('Ext.ux.grid.TransformGrid', 'statistics-table', {
+            // Create the statistics grid.
+            grid = Ext.create('Ext.ux.grid.TransformGrid', 'statistics-table', {
                 renderTo:'statistics-table-container',
                 sortableColumns:true,
                 minHeight:100,
@@ -57,61 +71,82 @@
                     enableTextSelection:true
                 }
             });
+
+            // Create the open games grid.
+            grid = Ext.create('Ext.ux.grid.TransformGrid', 'open-games-table', {
+                renderTo:'open-games-table-container',
+                sortableColumns:true,
+                minHeight:100,
+                overflowX:"hidden",
+                width:400,
+                viewConfig:{
+                    stripeRows:true,
+                    enableTextSelection:true
+                }
+            });
         });
     </script>
 </head>
 
 <body>
-<div id="users-table-container" style="width:397px; float: left;">
-    <h1>Select a player to play with:</h1>
-    <table id="users-table" cellspacing="0" cellpadding="0">
-        <thead>
-        <tr>
-            <th>Username</th>
-            <th>Full Name</th>
-        </tr>
-        </thead>
-        <tbody>
-        <g:each in="${loggedInUsers}" var="user">
+<div>
+    <div id="users-table-container" style="width:397px; float: left;">
+        <h1>Select a player to play with:</h1>
+        <table id="users-table" cellspacing="0" cellpadding="0">
+            <thead>
             <tr>
-                <td>
-                    <g:link controller="ticTacToe" action="startGame" id="${user.id}">${user.username}</g:link><br/>
-                </td>
-                <td>
-                    ${user.fullName}
-                </td>
+                <th>Username</th>
+                <th>Full Name</th>
             </tr>
-        </g:each>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            <g:each in="${loggedInUsers}" var="user">
+                <tr>
+                    <td>
+                        <g:link controller="ticTacToe" action="startGame" id="${user.id}">${user.username}</g:link><br/>
+                    </td>
+                    <td>
+                        ${user.fullName}
+                    </td>
+                </tr>
+            </g:each>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="statistics-table-container" style="width: 497px; float: right;">
+        <h1>Statistics:</h1>
+        <table id="statistics-table">
+            <thead>
+            <tr>
+                <th>
+                    Played against
+                </th>
+                <th>
+                    Games played
+                </th>
+                <th>
+                    Games won
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <g:each in="${statistics}" var="statistic">
+                <tr>
+                    <td>${statistic.user}</td>
+                    <td>${statistic.games}</td>
+                    <td>${statistic.wonGames}</td>
+                </tr>
+            </g:each>
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<div id="statistics-table-container" style="width: 497px; float: right;">
-    <h1>Statistics:</h1>
-    <table id="statistics-table">
-        <thead>
-        <tr>
-            <th>
-                Played against
-            </th>
-            <th>
-                Games played
-            </th>
-            <th>
-                Games won
-            </th>
-        </tr>
-        </thead>
-        <tbody>
-        <g:each in="${statistics}" var="statistic">
-            <tr>
-                <td>${statistic.user}</td>
-                <td>${statistic.games}</td>
-                <td>${statistic.wonGames}</td>
-            </tr>
-        </g:each>
-        </tbody>
-    </table>
+<br/>
+
+<div id="open-games-table-container" style="clear: both; width:397px;">
+    <g:render template="openGames" model="[currentUser: currentUser, openGames: openGames]"/>
 </div>
 </body>
 </html>
