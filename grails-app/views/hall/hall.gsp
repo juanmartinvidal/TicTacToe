@@ -7,9 +7,9 @@
     <link rel="stylesheet" type="text/css" href="../css/ext-all.css" media="screen"/>
 
     <script type="text/javascript">
-        //        $(function () {
-        //            var intervalId = setInterval(findOpenGames, 1500);
-        //        });
+        $(function () {
+            var intervalId = setInterval(findOpenGames, 1500);
+        });
 
         function findOpenGames() {
             $.ajax({
